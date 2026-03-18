@@ -1375,52 +1375,45 @@
     // ═══════════════════════════════════════════════════
     // SUBMIT
     // ═══════════════════════════════════════════════════
-    async function handleSubmit(isAutoSubmit) {
-      const answers = collectAnswers();
-      if (!validate(answers, isAutoSubmit)) {
-        document.getElementById('status-msg').textContent = '⚠️ Please answer all questions before submitting.';
-        document.querySelector('.has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-
-      clearInterval(countdown);
-      const submitBtn = document.getElementById('submit-btn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Submitting…';
-      document.getElementById('status-msg').textContent = 'Sending your responses…';
-
-      const candidateName = document.getElementById('candidate-name').value.trim() || '(Not provided)';
-      const scores = calculateScores(answers);
-      const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-
-      const payload = {
-        timestamp,
-        candidateName,
-        answers,         // individual answers q1–q50
-        scores           // section scores + total
-      };
-
-      try {
-        const resp = await fetch(SHEET_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-        const result = await resp.text();
-
-        if (result.includes('success') || resp.ok) {
-          showOverlay();
-        } else {
-          document.getElementById('status-msg').textContent = '⚠️ Submission issue. Please contact admin.';
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Retry Submit';
-        }
-      } catch (err) {
-        console.error(err);
-        document.getElementById('status-msg').textContent = '❌ Network error. Please check connection and retry.';
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Retry Submit';
-      }
+   async function handleSubmit(isAutoSubmit) {
+    const answers = collectAnswers();
+    if (!validate(answers, isAutoSubmit)) {
+      document.getElementById('status-msg').textContent = '⚠️ Please answer all questions before submitting.';
+      document.querySelector('.has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
     }
+
+    clearInterval(countdown);
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+    document.getElementById('status-msg').textContent = 'Sending your responses…';
+
+    const candidateName = document.getElementById('candidate-name').value.trim() || '(Not provided)';
+    const scores = calculateScores(answers);
+    const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    const payload = { timestamp, candidateName, answers, scores };
+
+    try {
+      // ✅ mode: 'no-cors' fixes the CORS block from GitHub Pages
+      await fetch(SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      });
+
+      // no-cors means we can't read the response — just assume success
+      showOverlay();
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById('status-msg').textContent = '❌ Network error. Please check connection and retry.';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Retry Submit';
+    }
+  }
 
     function showOverlay() {
       timerBar.style.background = '#1e8e3e';
