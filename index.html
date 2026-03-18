@@ -1375,7 +1375,7 @@
     // ═══════════════════════════════════════════════════
     // SUBMIT
     // ═══════════════════════════════════════════════════
-   async function handleSubmit(isAutoSubmit) {
+  async function handleSubmit(isAutoSubmit) {
     const answers = collectAnswers();
     if (!validate(answers, isAutoSubmit)) {
       document.getElementById('status-msg').textContent = '⚠️ Please answer all questions before submitting.';
@@ -1390,21 +1390,26 @@
     document.getElementById('status-msg').textContent = 'Sending your responses…';
 
     const candidateName = document.getElementById('candidate-name').value.trim() || '(Not provided)';
-    const scores = calculateScores(answers);
+    const scores  = calculateScores(answers);
     const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
-    const payload = { timestamp, candidateName, answers, scores };
+    // ✅ Build GET URL with parameters (bypasses CORS + redirect issue)
+    const params = new URLSearchParams({
+      candidateName: candidateName,
+      timestamp:     timestamp,
+      answers:       encodeURIComponent(JSON.stringify(answers)),
+      scores:        encodeURIComponent(JSON.stringify(scores))
+    });
+
+    const url = SHEET_URL + "?" + params.toString();
 
     try {
-      // ✅ mode: 'no-cors' fixes the CORS block from GitHub Pages
-      await fetch(SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(payload)
+      const resp = await fetch(url, {
+        method: 'GET',
+        mode:   'no-cors'
       });
 
-      // no-cors means we can't read the response — just assume success
+      // no-cors = can't read response, but data is sent — show success
       showOverlay();
 
     } catch (err) {
@@ -1414,7 +1419,6 @@
       submitBtn.textContent = 'Retry Submit';
     }
   }
-
     function showOverlay() {
       timerBar.style.background = '#1e8e3e';
       timerBar.innerHTML = '✅ Submitted successfully!';
