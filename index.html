@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tulsi Candidate Thinking Style Assessment</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Google Sans', Arial, sans-serif;
+      background: #f0ebf8;
+      min-height: 100vh;
+      padding-top: 60px;
+      padding-bottom: 40px;
+    }
+
+    /* ── TIMER BAR ── */
+    #timer-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #673ab7;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      z-index: 9999;
+      letter-spacing: 0.5px;
+      transition: background 0.5s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    #timer-bar.warning {
+      background: #e65100;
+    }
+
+    #timer-bar.danger {
+      background: #c62828;
+      animation: pulse 0.8s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0.75;
+      }
+    }
+
+    #timer-count {
+      font-size: 20px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 2px;
+    }
+
+    #progress-wrap {
+      position: fixed;
+      top: 48px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      z-index: 9999;
+    }
+
+    #progress-bar {
+      height: 100%;
+      background: #fff;
+      transition: width 1s linear;
+    }
+
+    /* ── OVERLAY ── */
+    #overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 99999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #overlay-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px 48px;
+      text-align: center;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    #overlay-box .icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+    }
+
+    #overlay-box h2 {
+      font-size: 24px;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+
+    #overlay-box p {
+      color: #555;
+      font-size: 15px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      margin: 0 auto 16px;
+      max-width: 720px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: #673ab7;
+      border-top: 10px solid #311b92;
+      padding: 28px 32px 24px;
+      color: #fff;
+    }
+
+    .card-header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .card-header p {
+      font-size: 14px;
+      opacity: 0.88;
+      line-height: 1.5;
+    }
+
+    .card-body {
+      padding: 28px 32px;
+    }
+
+    /* ── NAME FIELD ── */
+    .field-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #202124;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .field-label span {
+      color: #c62828;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid #dadce0;
+      font-size: 14px;
+      padding: 4px 0 6px;
+      outline: none;
+      color: #202124;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-bottom: 2px solid #673ab7;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      background: #ede7f6;
+      border-left: 5px solid #673ab7;
+      padding: 14px 20px;
+      margin: 24px auto 0;
+      max-width: 720px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .section-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #311b92;
+    }
+
+    .section-num {
+      font-size: 11px;
+      color: #7b1fa2;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 2px;
+    }
+
+    /* ── QUESTION ── */
+    .question-block {
+      padding: 20px 0;
+      border-bottom: 1px solid #f1f3f4;
+    }
+
+    .question-block:last-child {
+      border-bottom: none;
+    }
+
+    .q-text {
+      font-size: 14px;
+      color: #202124;
+      line-height: 1.6;
+      margin-bottom: 14px;
+      font-weight: 500;
+    }
+
+    .q-num {
+      color: #673ab7;
+      font-weight: 700;
+      margin-right: 4px;
+    }
+
+    .reversed-tag {
+      display: inline-block;
+      font-size: 10px;
+      background: #fce4ec;
+      color: #ad1457;
+      border-radius: 4px;
+      padding: 1px 6px;
+      margin-left: 8px;
+      font-weight: 600;
+      vertical-align: middle;
+    }
+
+    /* ── LIKERT SCALE ── */
+    .likert {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    @media (max-width: 500px) {
+      .likert {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .likert label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      border: 1.5px solid #dadce0;
+      border-radius: 8px;
+      padding: 10px 8px;
+      transition: border-color 0.15s, background 0.15s;
+      font-size: 12px;
+      color: #5f6368;
+      gap: 6px;
+      user-select: none;
+    }
+
+    .likert label:hover {
+      border-color: #673ab7;
+      background: #f3e5f5;
+    }
+
+    .likert input[type="radio"] {
+      display: none;
+    }
+
+    .likert input[type="radio"]:checked+span.radio-circle {
+      background: #673ab7;
+      border-color: #673ab7;
+    }
+
+    .likert input[type="radio"]:checked~span.label-text {
+      color: #311b92;
+      font-weight: 600;
+    }
+
+    .likert label:has(input:checked) {
+      border-color: #673ab7;
+      background: #ede7f6;
+    }
+
+    .radio-circle {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #bdbdbd;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .radio-circle::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      display: none;
+    }
+
+    .likert input[type="radio"]:checked+.radio-circle::after {
+      display: block;
+    }
+
+    .label-text {
+      font-size: 11px;
+      font-weight: 500;
+      color: #5f6368;
+      line-height: 1.3;
+    }
+
+    /* ── SUBMIT BUTTON ── */
+    .submit-wrap {
+      text-align: center;
+      padding: 28px 0 8px;
+    }
+
+    #submit-btn {
+      background: #673ab7;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 12px 36px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.5px;
+    }
+
+    #submit-btn:hover {
+      background: #4527a0;
+    }
+
+    #submit-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* ── VALIDATION ── */
+    .q-error {
+      font-size: 12px;
+      color: #c62828;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .question-block.has-error .q-error {
+      display: block;
+    }
+
+    .question-block.has-error .likert label {
+      border-color: #f28b82;
+    }
+
+    /* ── STATUS ── */
+    #status-msg {
+      font-size: 13px;
+      color: #555;
+      text-align: center;
+      margin-top: 12px;
+      min-height: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Timer Bar -->
+  <div id="timer-bar">
+    <span>⏱ Time Remaining:</span>
+    <span id="timer-count">03:00</span>
+  </div>
+  <div id="progress-wrap">
+    <div id="progress-bar" style="width:100%"></div>
+  </div>
+
+  <!-- Submitted Overlay -->
+  <div id="overlay">
+    <div id="overlay-box">
+      <div class="icon">✅</div>
+      <h2>Form Submitted!</h2>
+      <p>Your response has been recorded successfully.<br />Thank you for completing the assessment.</p>
+    </div>
+  </div>
+
+  <!-- ══ HEADER CARD ══ -->
+  <div class="card">
+    <div class="card-header">
+      <h1>Tulsi Candidate Thinking Style Assessment</h1>
+      <p>Please answer quickly. Choose the option that best reflects your natural response.<br />
+        This assessment has a <strong>3-minute timer</strong>. The form will auto-submit when time runs out.</p>
+    </div>
+    <div class="card-body">
+      <label class="field-label">Candidate Name <span>*</span></label>
+      <input type="text" id="candidate-name" placeholder="Your answer" required />
+    </div>
+  </div>
+
+  <!-- ══ FORM ══ -->
+  <form id="assessment-form" novalidate>
+
+    <!-- ── SECTION 1: CUSTOMER FIRST ── -->
+    <div class="section-header">
+      <div class="section-num">Section 1 of 5</div>
+      <h2>Customer First</h2>
+    </div>
+    <div class="card">
+      <div class="card-body" id="section-1">
+
+        <div class="question-block" data-q="1" data-reversed="false">
+          <div class="q-text"><span class="q-num">1.</span> Customers should be advised honestly even if it reduces the
+            sale.</div>
+          <div class="likert">
+            <label><input type="radio" name="q1" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q1" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q1" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q1" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="2" data-reversed="false">
+          <div class="q-text"><span class="q-num">2.</span> Understanding customer needs is more important than closing
+            a quick sale.</div>
+          <div class="likert">
+            <label><input type="radio" name="q2" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q2" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q2" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q2" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="3" data-reversed="false">
+          <div class="q-text"><span class="q-num">3.</span> Long-term trust with customers is more valuable than one
+            sale.</div>
+          <div class="likert">
+            <label><input type="radio" name="q3" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q3" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q3" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q3" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="4" data-reversed="false">
+          <div class="q-text"><span class="q-num">4.</span> If a cheaper solution exists, it should still be suggested
+            to the customer.</div>
+          <div class="likert">
+            <label><input type="radio" name="q4" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q4" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q4" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q4" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="5" data-reversed="false">
+          <div class="q-text"><span class="q-num">5.</span> Customers appreciate guidance more than persuasion.</div>
+          <div class="likert">
+            <label><input type="radio" name="q5" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q5" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q5" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q5" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="6" data-reversed="false">
+          <div class="q-text"><span class="q-num">6.</span> Salespeople should act like consultants for customers.</div>
+          <div class="likert">
+            <label><input type="radio" name="q6" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q6" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q6" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q6" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="7" data-reversed="false">
+          <div class="q-text"><span class="q-num">7.</span> Customer satisfaction after the sale is part of the
+            salesperson's responsibility.</div>
+          <div class="likert">
+            <label><input type="radio" name="q7" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q7" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q7" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q7" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="8" data-reversed="true">
+          <div class="q-text"><span class="q-num">8.</span> It is acceptable to sell something even if the customer may
+            not need it.<span class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q8" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q8" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q8" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q8" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="9" data-reversed="true">
+          <div class="q-text"><span class="q-num">9.</span> Sales targets should come before customer benefit.<span
+              class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q9" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q9" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q9" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q9" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="10" data-reversed="true">
+          <div class="q-text"><span class="q-num">10.</span> Once a sale is completed, maintaining the relationship is
+            not important.<span class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q10" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q10" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q10" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q10" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── SECTION 2: TRANSPARENCY ── -->
+    <div class="section-header">
+      <div class="section-num">Section 2 of 5</div>
+      <h2>Transparency</h2>
+    </div>
+    <div class="card">
+      <div class="card-body">
+
+        <div class="question-block" data-q="11" data-reversed="false">
+          <div class="q-text"><span class="q-num">11.</span> Mistakes should be reported even if they reflect poorly on
+            you.</div>
+          <div class="likert">
+            <label><input type="radio" name="q11" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q11" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q11" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q11" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="12" data-reversed="false">
+          <div class="q-text"><span class="q-num">12.</span> Honest reporting builds trust inside a company.</div>
+          <div class="likert">
+            <label><input type="radio" name="q12" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q12" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q12" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q12" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="13" data-reversed="false">
+          <div class="q-text"><span class="q-num">13.</span> Managers prefer accurate updates over perfect reports.
+          </div>
+          <div class="likert">
+            <label><input type="radio" name="q13" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q13" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q13" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q13" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="14" data-reversed="false">
+          <div class="q-text"><span class="q-num">14.</span> Transparency prevents bigger problems later.</div>
+          <div class="likert">
+            <label><input type="radio" name="q14" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q14" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q14" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q14" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="15" data-reversed="false">
+          <div class="q-text"><span class="q-num">15.</span> Admitting mistakes is part of professionalism.</div>
+          <div class="likert">
+            <label><input type="radio" name="q15" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q15" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q15" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q15" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="16" data-reversed="true">
+          <div class="q-text"><span class="q-num">16.</span> Small mistakes do not need to be reported.<span
+              class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q16" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q16" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q16" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q16" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="17" data-reversed="true">
+          <div class="q-text"><span class="q-num">17.</span> If a mistake goes unnoticed, it is better not to mention
+            it.<span class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q17" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q17" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q17" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q17" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="18" data-reversed="true">
+          <div class="q-text"><span class="q-num">18.</span> Reports can sometimes be adjusted slightly to reflect
+            effort.<span class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q18" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q18" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q18" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q18" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="19" data-reversed="false">
+          <div class="q-text"><span class="q-num">19.</span> Clear communication builds trust within a team.</div>
+          <div class="likert">
+            <label><input type="radio" name="q19" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q19" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q19" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q19" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="20" data-reversed="false">
+          <div class="q-text"><span class="q-num">20.</span> Truthful reporting is important even when results are poor.
+          </div>
+          <div class="likert">
+            <label><input type="radio" name="q20" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q20" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q20" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q20" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── SECTION 3: HELPING OTHERS ── -->
+    <div class="section-header">
+      <div class="section-num">Section 3 of 5</div>
+      <h2>Helping Others</h2>
+    </div>
+    <div class="card">
+      <div class="card-body">
+
+        <div class="question-block" data-q="21" data-reversed="false">
+          <div class="q-text"><span class="q-num">21.</span> Helping colleagues improves overall team performance.</div>
+          <div class="likert">
+            <label><input type="radio" name="q21" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q21" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q21" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q21" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="22" data-reversed="false">
+          <div class="q-text"><span class="q-num">22.</span> Sharing knowledge helps everyone succeed.</div>
+          <div class="likert">
+            <label><input type="radio" name="q22" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q22" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q22" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q22" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="23" data-reversed="false">
+          <div class="q-text"><span class="q-num">23.</span> Supporting teammates builds trust in the workplace.</div>
+          <div class="likert">
+            <label><input type="radio" name="q23" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q23" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q23" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q23" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="24" data-reversed="false">
+          <div class="q-text"><span class="q-num">24.</span> Team success is more important than individual success.
+          </div>
+          <div class="likert">
+            <label><input type="radio" name="q24" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q24" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q24" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q24" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="25" data-reversed="false">
+          <div class="q-text"><span class="q-num">25.</span> Strong teams help each other achieve targets.</div>
+          <div class="likert">
+            <label><input type="radio" name="q25" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q25" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q25" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q25" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="26" data-reversed="true">
+          <div class="q-text"><span class="q-num">26.</span> Everyone should focus only on their own work.<span
+              class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q26" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q26" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q26" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q26" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="27" data-reversed="true">
+          <div class="q-text"><span class="q-num">27.</span> Helping others often wastes time.<span
+              class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q27" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q27" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q27" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q27" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="28" data-reversed="true">
+          <div class="q-text"><span class="q-num">28.</span> Colleagues should solve their own problems.<span
+              class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q28" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q28" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q28" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q28" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="29" data-reversed="false">
+          <div class="q-text"><span class="q-num">29.</span> Work becomes easier when people support each other.</div>
+          <div class="likert">
+            <label><input type="radio" name="q29" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q29" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q29" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q29" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="30" data-reversed="false">
+          <div class="q-text"><span class="q-num">30.</span> Collaboration improves results.</div>
+          <div class="likert">
+            <label><input type="radio" name="q30" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q30" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q30" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q30" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── SECTION 4: ACCOUNTABILITY ── -->
+    <div class="section-header">
+      <div class="section-num">Section 4 of 5</div>
+      <h2>Accountability</h2>
+    </div>
+    <div class="card">
+      <div class="card-body">
+
+        <div class="question-block" data-q="31" data-reversed="false">
+          <div class="q-text"><span class="q-num">31.</span> Taking responsibility builds professional credibility.
+          </div>
+          <div class="likert">
+            <label><input type="radio" name="q31" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q31" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q31" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q31" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="32" data-reversed="false">
+          <div class="q-text"><span class="q-num">32.</span> Problems should be reported early.</div>
+          <div class="likert">
+            <label><input type="radio" name="q32" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q32" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q32" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q32" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="33" data-reversed="false">
+          <div class="q-text"><span class="q-num">33.</span> Learning from mistakes improves performance.</div>
+          <div class="likert">
+            <label><input type="radio" name="q33" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q33" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q33" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q33" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="34" data-reversed="false">
+          <div class="q-text"><span class="q-num">34.</span> Owning mistakes earns respect.</div>
+          <div class="likert">
+            <label><input type="radio" name="q34" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q34" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q34" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q34" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="35" data-reversed="false">
+          <div class="q-text"><span class="q-num">35.</span> Responsible employees accept both success and failure.
+          </div>
+          <div class="likert">
+            <label><input type="radio" name="q35" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q35" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q35" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q35" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="36" data-reversed="true">
+          <div class="q-text"><span class="q-num">36.</span> External factors are usually responsible for poor
+            results.<span class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q36" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q36" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q36" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q36" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="37" data-reversed="true">
+          <div class="q-text"><span class="q-num">37.</span> Blaming circumstances is sometimes necessary.<span
+              class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q37" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q37" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q37" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q37" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="38" data-reversed="true">
+          <div class="q-text"><span class="q-num">38.</span> It is better to quietly fix mistakes rather than report
+            them.<span class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q38" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q38" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q38" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q38" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="39" data-reversed="false">
+          <div class="q-text"><span class="q-num">39.</span> Managers respect employees who take responsibility.</div>
+          <div class="likert">
+            <label><input type="radio" name="q39" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q39" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q39" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q39" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="40" data-reversed="false">
+          <div class="q-text"><span class="q-num">40.</span> Accountability improves trust within a team.</div>
+          <div class="likert">
+            <label><input type="radio" name="q40" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q40" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q40" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q40" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── SECTION 5: WORK ETHIC & SERVICE MINDSET ── -->
+    <div class="section-header">
+      <div class="section-num">Section 5 of 5</div>
+      <h2>Work Ethic &amp; Service Mindset</h2>
+    </div>
+    <div class="card">
+      <div class="card-body">
+
+        <div class="question-block" data-q="41" data-reversed="false">
+          <div class="q-text"><span class="q-num">41.</span> Consistent daily effort leads to sales success.</div>
+          <div class="likert">
+            <label><input type="radio" name="q41" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q41" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q41" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q41" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="42" data-reversed="false">
+          <div class="q-text"><span class="q-num">42.</span> Hard work is more reliable than shortcuts.</div>
+          <div class="likert">
+            <label><input type="radio" name="q42" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q42" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q42" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q42" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="43" data-reversed="false">
+          <div class="q-text"><span class="q-num">43.</span> Successful salespeople meet more customers than average
+            salespeople.</div>
+          <div class="likert">
+            <label><input type="radio" name="q43" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q43" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q43" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q43" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="44" data-reversed="false">
+          <div class="q-text"><span class="q-num">44.</span> Discipline and routine are important in field sales.</div>
+          <div class="likert">
+            <label><input type="radio" name="q44" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q44" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q44" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q44" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="45" data-reversed="false">
+          <div class="q-text"><span class="q-num">45.</span> Service to customers continues even after the sale.</div>
+          <div class="likert">
+            <label><input type="radio" name="q45" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q45" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q45" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q45" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="46" data-reversed="true">
+          <div class="q-text"><span class="q-num">46.</span> Sales responsibility ends once the product is sold.<span
+              class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q46" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q46" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q46" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q46" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="47" data-reversed="true">
+          <div class="q-text"><span class="q-num">47.</span> Skipping field visits occasionally is acceptable.<span
+              class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q47" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q47" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q47" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q47" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="48" data-reversed="true">
+          <div class="q-text"><span class="q-num">48.</span> Results depend more on luck than effort.<span
+              class="reversed-tag">Reversed</span></div>
+          <div class="likert">
+            <label><input type="radio" name="q48" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q48" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q48" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q48" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="49" data-reversed="false">
+          <div class="q-text"><span class="q-num">49.</span> Persistence is necessary to succeed in sales.</div>
+          <div class="likert">
+            <label><input type="radio" name="q49" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q49" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q49" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q49" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <div class="question-block" data-q="50" data-reversed="false">
+          <div class="q-text"><span class="q-num">50.</span> Helping customers solve problems builds long-term
+            relationships.</div>
+          <div class="likert">
+            <label><input type="radio" name="q50" value="SA" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Agree</span></label>
+            <label><input type="radio" name="q50" value="A" /><span class="radio-circle"></span><span
+                class="label-text">Agree</span></label>
+            <label><input type="radio" name="q50" value="D" /><span class="radio-circle"></span><span
+                class="label-text">Disagree</span></label>
+            <label><input type="radio" name="q50" value="SD" /><span class="radio-circle"></span><span
+                class="label-text">Strongly Disagree</span></label>
+          </div>
+          <div class="q-error">Please select an option.</div>
+        </div>
+
+        <!-- Submit -->
+        <div class="submit-wrap">
+          <button type="button" id="submit-btn" onclick="handleSubmit(false)">Submit</button>
+          <div id="status-msg"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </form>
+
+  <!-- ══ SCRIPT ══ -->
+  <script>
+    // ═══════════════════════════════════════════════════
+    // ⚙️  CONFIGURATION — UPDATE THESE VALUES
+    // ═══════════════════════════════════════════════════
+    const SHEET_URL = "https://script.google.com/macros/s/AKfycbzuCGXFsnPG7a3puW-5lujxFd9UfaIL97BGKKsBgEl_q-569DikX-psvRlJ_jmCydMKZA/exec";
+    const TIMER_SECS = 3 * 60; // 3 minutes
+
+    // ═══════════════════════════════════════════════════
+    // SCORING MAPS
+    // ═══════════════════════════════════════════════════
+    const NORMAL_SCORE = { SA: 4, A: 3, D: 2, SD: 1 };
+    const REVERSED_SCORE = { SA: 1, A: 2, D: 3, SD: 4 };
+
+    const SECTION_MAP = {
+      "Customer First": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "Transparency": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+      "Helping Others": [21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+      "Accountability": [31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
+      "Work Ethic & Service": [41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
+    };
+
+    // ═══════════════════════════════════════════════════
+    // TIMER
+    // ═══════════════════════════════════════════════════
+    let timeLeft = TIMER_SECS;
+    const timerEl = document.getElementById('timer-count');
+    const timerBar = document.getElementById('timer-bar');
+    const progressEl = document.getElementById('progress-bar');
+
+    function formatTime(s) {
+      const m = Math.floor(s / 60).toString().padStart(2, '0');
+      const sc = (s % 60).toString().padStart(2, '0');
+      return `${m}:${sc}`;
+    }
+
+    timerEl.textContent = formatTime(timeLeft);
+
+    const countdown = setInterval(() => {
+      timeLeft--;
+      timerEl.textContent = formatTime(timeLeft);
+      progressEl.style.width = ((timeLeft / TIMER_SECS) * 100) + '%';
+
+      if (timeLeft <= 60) timerBar.className = 'danger';
+      else if (timeLeft <= 120) timerBar.className = 'warning';
+
+      if (timeLeft <= 0) {
+        clearInterval(countdown);
+        handleSubmit(true); // auto-submit
+      }
+    }, 1000);
+
+    // ═══════════════════════════════════════════════════
+    // SCORING
+    // ═══════════════════════════════════════════════════
+    function getScore(questionNum, value) {
+      const block = document.querySelector(`.question-block[data-q="${questionNum}"]`);
+      const isReversed = block && block.dataset.reversed === "true";
+      return isReversed ? REVERSED_SCORE[value] : NORMAL_SCORE[value];
+    }
+
+    function calculateScores(answers) {
+      const scores = {};
+      let total = 0;
+      for (const [section, qNums] of Object.entries(SECTION_MAP)) {
+        let sectionScore = 0;
+        qNums.forEach(n => {
+          const val = answers[`q${n}`];
+          if (val) {
+            const s = getScore(n, val);
+            sectionScore += s;
+            total += s;
+          }
+        });
+        scores[section] = sectionScore;
+      }
+      scores['Total'] = total;
+      return scores;
+    }
+
+    // ═══════════════════════════════════════════════════
+    // COLLECT ANSWERS
+    // ═══════════════════════════════════════════════════
+    function collectAnswers() {
+      const answers = {};
+      for (let i = 1; i <= 50; i++) {
+        const sel = document.querySelector(`input[name="q${i}"]:checked`);
+        answers[`q${i}`] = sel ? sel.value : null;
+      }
+      return answers;
+    }
+
+    // ═══════════════════════════════════════════════════
+    // VALIDATE
+    // ═══════════════════════════════════════════════════
+    function validate(answers, isAutoSubmit) {
+      if (isAutoSubmit) return true; // skip validation on auto-submit
+      let valid = true;
+      document.querySelectorAll('.question-block').forEach(block => {
+        const q = block.dataset.q;
+        if (!answers[`q${q}`]) {
+          block.classList.add('has-error');
+          valid = false;
+        } else {
+          block.classList.remove('has-error');
+        }
+      });
+      const name = document.getElementById('candidate-name').value.trim();
+      if (!name) {
+        document.getElementById('candidate-name').style.borderBottomColor = '#c62828';
+        valid = false;
+      }
+      return valid;
+    }
+
+    // ═══════════════════════════════════════════════════
+    // SUBMIT
+    // ═══════════════════════════════════════════════════
+    async function handleSubmit(isAutoSubmit) {
+      const answers = collectAnswers();
+      if (!validate(answers, isAutoSubmit)) {
+        document.getElementById('status-msg').textContent = '⚠️ Please answer all questions before submitting.';
+        document.querySelector('.has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      clearInterval(countdown);
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+      document.getElementById('status-msg').textContent = 'Sending your responses…';
+
+      const candidateName = document.getElementById('candidate-name').value.trim() || '(Not provided)';
+      const scores = calculateScores(answers);
+      const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+      const payload = {
+        timestamp,
+        candidateName,
+        answers,         // individual answers q1–q50
+        scores           // section scores + total
+      };
+
+      try {
+        const resp = await fetch(SHEET_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        const result = await resp.text();
+
+        if (result.includes('success') || resp.ok) {
+          showOverlay();
+        } else {
+          document.getElementById('status-msg').textContent = '⚠️ Submission issue. Please contact admin.';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Retry Submit';
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('status-msg').textContent = '❌ Network error. Please check connection and retry.';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Retry Submit';
+      }
+    }
+
+    function showOverlay() {
+      timerBar.style.background = '#1e8e3e';
+      timerBar.innerHTML = '✅ Submitted successfully!';
+      document.getElementById('overlay').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+  </script>
+
+</body>
+
+</html>
